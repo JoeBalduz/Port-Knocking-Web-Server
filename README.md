@@ -60,7 +60,8 @@ client side of the program operates in a loop to allow you to continuously send 
 again, so if the wrong IP address was entered, the program will have to be closed and opened back up again.
 
 I have included some test html files and a testable download file. The pages can be accessed on your browser once the port knock has 
-been completed by going to [server_machine_ip_address]:8080/test_files/[file_name].
+been completed by going to [server_machine_ip_address]:8080/test_files/[file_name]. After 10 seconds have passed, the web server will
+be shut down and you will have to do another port knock to access those files again.
 
 The web server used in this program is called weblite. It was created by Dr. Ken Christensen, a professor at the University of South
 Florida. More information about the program can be found in weblite.c. I created this program in a way that allows you to replace
@@ -69,3 +70,6 @@ web_server function. Inside of that function there is a comment that says /*Crea
 that is the string weblite. Simply change that string to your desired web server and recompile the server program. Your chosen web 
 server must be in the same directory as the server program.
 
+# Known Bugs
+There is a bug where the client will send the message to an incorrect IP address. I think that this has to do with the length of the IP
+address entered in by the user. This shouldn't be too difficult to fix and I will fix it once I have time.

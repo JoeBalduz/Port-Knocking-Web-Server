@@ -13,7 +13,8 @@ sniff packets to see what port a client is sending messages to. Because of this,
 correct port on the server to "knock" to bring up the web server. To combat this, we have a shared secret between the client and the 
 server. The client must now send a message that contains that secret to the server. The web server will then only be brought up if the 
 secret is received by the server. This secret can't just be sent over in plain text since an attacker could sniff the packet and see
-exactly what the secret message is. Because of this, we use an MD5 hashing function. There was no specific reason I chose the MD5
+exactly what the secret message is. Because of this, we use an MD5 hashing function. I did not create this MD5 hashing function. 
+Information about the creators and copyright information can be found in md5.c. There was no specific reason I chose the MD5
 hashing function other than it does what I want it to do. It turns plain text to a signature. Now an attacker won't be able to know
 what the shared secret is. This is good, however I this method is vulnerable to playback attacks. It doesn't matter that the attacker
 doesn't know the shared secret since the exact packet can just sniffed and sent to the server. I then chose to add a timestamp to this
@@ -22,7 +23,18 @@ sent to the server is now "shared_secret + timestamp". I originally chose the ti
 When testing the client and the server on the same machine, the port knocking worked perfectly. However, once I moved on to using two 
 different machines, I ran into a problem where the UNIX time on my two machines were off by a couple of seconds. This could be fixed by
 syncing both of their clocks up, however I did not think doing it that way was a good idea. I switced to minutes since that timestamp
-wouldn't have to be as accurate. This does however now leave some time for an attacker to playback a sent message. 
+wouldn't have to be as accurate. This does however now leave some time for an attacker to playback a sent message. I then thought that
+it would be a good idea to also include the client's IP address in the message. I chose to add the IP address since this is something 
+that the server could verify.The message sent to the server is now "shared_secret +  timestamp + ip_address". That message then gets put
+into the MD5 hashing function before being sent to the server. This makes the web servermore secure against playback attacks, however an 
+attacker could spoof the clients IP address.
+
+I will now go into how the message is sent and verified by the client and the server. The client will create the message described above
+and put it into the MD5 hasing function to generate a signature. This signature is then sent to the server. As soon as the server 
+receives the message, it will get a timestamp of the time in minutes in UNIX time. It then attached that timestamp to the shared secret.
+The server also then gets the client's IP address and also attaches that to string that now contains the shared secret and the time 
+stamp. That string is then put into the same MD5 hashing function so that a signature can be generated. That signature is then compared
+to the signature sent by the client. If they are the same, the web server is brought up. If they aren't the same, nothing happens.
 
 # Running the Program
 This program is made to work for Windows. Right now, the client and the server must be run on two different machines that are on the 
@@ -46,4 +58,14 @@ will send the message to the server can cause the web server to be brought up. O
 to open the web server and what was actually received. If an incorrect message is sent, the web server will not be brought up. The 
 client side of the program operates in a loop to allow you to continuously send messages to the server. It will not ask for the IP 
 again, so if the wrong IP address was entered, the program will have to be closed and opened back up again.
+
+I have included some test html files and a testable download file. The pages can be accessed on your browser once the port knock has 
+been completed by going to [server_machine_ip_address]:8080/test_files/[file_name].
+
+The web server used in this program is called weblite. It was created by Dr. Ken Christensen, a professor at the University of South
+Florida. More information about the program can be found in weblite.c. I created this program in a way that allows you to replace
+the web server that is being used. All that you have to do to change the web server being used is to go into server.c and find the 
+web_server function. Inside of that function there is a comment that says /*Creates the weblite process*/. You will see that underneath
+that is the string weblite. Simply change that string to your desired web server and recompile the server program. Your chosen web 
+server must be in the same directory as the server program.
 

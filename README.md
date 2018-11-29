@@ -1,14 +1,23 @@
 # Port-Knocking-Web-Server
 
-This port knocking web server is comprised of two parts. The client and the server. The client sends a "knock" to the server to start up a
-web server process. The web server will remain open for 10 seconds before being closed. If the client sends a "knock" to the server while
-the web server is still up, the timer will be reset to 10. This port knocking web server is made to be reasonably secure against playback
-attacks. The client and the server must be on the same network.
+This port knocking web server is comprised of two parts. The client and the server. The client sends a "knock" to the server to start up 
+a web server process. The web server will remain open for 10 seconds before being closed. If the client sends a "knock" to the server 
+while the web server is still up, the timer will be reset to 10. This port knocking web server is made to be reasonably secure against 
+playback attacks. The client and the server must be on the same network.
+
+# How the Programs Work
+
+This program works by having the client send a "knock" to the server to bring up a web server. This "knock" needs to be sent to the
+correct port on the server. This port is a secret known only the client and the server. It is however possible that an attacker may 
+sniff packets to see what port a client is sending messages to. Because of this, it is assumed that a possible attacker knows the 
+correct port on the server to "knock" to bring up the web server. To combat this, we have a shared secret between the client and the 
+server. The client must now send a message that contains that secret to the server. The web server will then only be brought up if the 
+secret is received by the server.
 
 # Running the Program
-This program is made to work for Windows. Right now, the client and the server must be run on two different machines that are on the same
-network. I plan on adding a change in the future that will allow the two programs to be run on the same machine. The programs can be
-compiled by bringing up command prompt for VS. The following commands will compile the programs.
+This program is made to work for Windows. Right now, the client and the server must be run on two different machines that are on the 
+same network. I plan on adding a change in the future that will allow the two programs to be run on the same machine. The programs can 
+be compiled by bringing up command prompt for VS. The following commands will compile the programs.
 
 For the server:
 
@@ -24,7 +33,7 @@ command ipconfig /all on the server machine. The program will then ask you for t
 want the port to be different, change the define of PORT in server.c to what you want the port to be and recompile the server. You will
 then be asked to send a message to the server. The message that must be sent is the string "password" without the quotation marks. This
 will send the message to the server can cause the web server to be brought up. On the server side, you'll what the expected message is
-to open the web server and what was actually received. If an incorrect message is sent, the web server will not be brought up. The client
-side of the program operates in a loop to allow you to continuously send messages to the server. It will not ask for the IP again, so if
-the wrong IP address was entered, the program will have to be closed and opened back up again.
+to open the web server and what was actually received. If an incorrect message is sent, the web server will not be brought up. The 
+client side of the program operates in a loop to allow you to continuously send messages to the server. It will not ask for the IP 
+again, so if the wrong IP address was entered, the program will have to be closed and opened back up again.
 

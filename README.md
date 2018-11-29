@@ -5,7 +5,7 @@ web server process. The web server will remain open for 10 seconds before being 
 the web server is still up, the timer will be reset to 10.
 
 # Running the Program
-This program is made to work for Windows. It can be compiled by following the commands below.
+This program is made to work for Windows. It can be compiled by bringing up command prompt for VS.
 
 For the server:
 

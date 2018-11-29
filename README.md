@@ -12,7 +12,17 @@ correct port on the server. This port is a secret known only the client and the 
 sniff packets to see what port a client is sending messages to. Because of this, it is assumed that a possible attacker knows the 
 correct port on the server to "knock" to bring up the web server. To combat this, we have a shared secret between the client and the 
 server. The client must now send a message that contains that secret to the server. The web server will then only be brought up if the 
-secret is received by the server.
+secret is received by the server. This secret can't just be sent over in plain text since an attacker could sniff the packet and see
+exactly what the secret message is. Because of this, we use an MD5 hashing function. There was no specific reason I chose the MD5
+hashing function other than it does what I want it to do. It turns plain text to a signature. Now an attacker won't be able to know
+what the shared secret is. This is good, however I this method is vulnerable to playback attacks. It doesn't matter that the attacker
+doesn't know the shared secret since the exact packet can just sniffed and sent to the server. I then chose to add a timestamp to this
+shared secret. This timestamp is the taken in minutes in UNIX time. This was done so that messages expire after 1 minute. The message
+sent to the server is now "shared_secret + timestamp". I originally chose the timestamp to be in seconds but I ran into some problems. 
+When testing the client and the server on the same machine, the port knocking worked perfectly. However, once I moved on to using two 
+different machines, I ran into a problem where the UNIX time on my two machines were off by a couple of seconds. This could be fixed by
+syncing both of their clocks up, however I did not think doing it that way was a good idea. I switced to minutes since that timestamp
+wouldn't have to be as accurate. This does however now leave some time for an attacker to playback a sent message. 
 
 # Running the Program
 This program is made to work for Windows. Right now, the client and the server must be run on two different machines that are on the 
